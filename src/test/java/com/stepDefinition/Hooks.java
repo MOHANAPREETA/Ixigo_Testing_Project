@@ -42,17 +42,8 @@ public class Hooks extends Base{
 	@After
 	public void teardown() {
 		Base.sleep();
-		driver.quit();
+		//driver.quit();
 	}
 	
-	@BeforeStep
-	public void beforeStep() {
-		
-	}
-	
-	@AfterStep
-	public void afterStep() {
-		
-	}
 
 }
