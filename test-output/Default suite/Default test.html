@@ -55,11 +55,11 @@ function toggleAllBoxes() {
 <body>
 <h2 align='center'>Default test</h2><table border='1' align="center">
 <tr>
-<td>Tests passed/Failed/Skipped:</td><td>2/0/0</td>
+<td>Tests passed/Failed/Skipped:</td><td>0/1/0</td>
 </tr><tr>
-<td>Started on:</td><td>Mon Sep 08 16:38:45 IST 2025</td>
+<td>Started on:</td><td>Wed Sep 10 09:31:15 IST 2025</td>
 </tr>
-<tr><td>Total time:</td><td>59 seconds (59725 ms)</td>
+<tr><td>Total time:</td><td>118 seconds (118300 ms)</td>
 </tr><tr>
 <td>Included groups:</td><td></td>
 </tr><tr>
@@ -67,8 +67,8 @@ function toggleAllBoxes() {
 </tr>
 </table><p/>
 <small><i>(Hover the method name to see the test class name)</i></small><p/>
-<table width='100%' border='1' class='invocation-passed'>
-<tr><td colspan='4' align='center'><b>PASSED TESTS</b></td></tr>
+<table width='100%' border='1' class='invocation-failed'>
+<tr><td colspan='4' align='center'><b>FAILED TESTS</b></td></tr>
 <tr><td><b>Test method</b></td>
 <td><b>Attribute(s)</b></td>
 <td width="30%"><b>Exception</b></td>
@@ -76,14 +76,22 @@ function toggleAllBoxes() {
 <td><b>Instance</b></td>
 </tr>
 <tr>
-<td title='com.runner.TestRunner.runScenario()'><b>runScenario</b><br>Test class: com.runner.TestRunner<br>Test method: Runs Cucumber Scenarios<br>Parameters: "Unsuccessful login with invalid mobile number", "Mobile Login"</td>
-<td></td>
-<td>8</td>
-<td>com.runner.TestRunner@2002fc1d</td></tr>
-<tr>
-<td title='com.runner.TestRunner.runScenario()'><b>runScenario</b><br>Test class: com.runner.TestRunner<br>Test method: Runs Cucumber Scenarios<br>Parameters: "Successful login with valid mobile number", "Mobile Login"</td>
-<td></td>
-<td>48</td>
+<td title='com.runner.TestRunner.runScenario()'><b>runScenario</b><br>Test class: com.runner.TestRunner<br>Test method: Runs Cucumber Scenarios<br>Parameters: "Search round-trip flights and see results", "Search Round Trip Flights"</td>
+<td><div><pre>java.lang.AssertionError: Expected search results to be displayed expected [true] but found [false]
+	at org.testng.Assert.fail(Assert.java:111)
+	at org.testng.Assert.failNotEquals(Assert.java:1590)
+	at org.testng.Assert.assertTrue(Assert.java:57)
+	at com.stepDefinition.searchingdefinitions.search_results_should_be_displayed(searchingdefinitions.java:72)
+	at ✽.search results should be displayed(file:///C:/Users/preeta/Desktop/capgemini/Ixigo_Testing_Project/src/test/resources/Features/flightsearch.feature:13)
+</pre></div><a href='#' onClick='toggleBox("stack-trace2088661957", this, "Click to show all stack frames", "Click to hide stack frames")'>Click to show all stack frames</a>
+<div class='stack-trace' id='stack-trace2088661957'><pre>java.lang.AssertionError: Expected search results to be displayed expected [true] but found [false]
+	at org.testng.Assert.fail(Assert.java:111)
+	at org.testng.Assert.failNotEquals(Assert.java:1590)
+	at org.testng.Assert.assertTrue(Assert.java:57)
+	at com.stepDefinition.searchingdefinitions.search_results_should_be_displayed(searchingdefinitions.java:72)
+	at ✽.search results should be displayed(file:///C:/Users/preeta/Desktop/capgemini/Ixigo_Testing_Project/src/test/resources/Features/flightsearch.feature:13)
+</pre></div></td>
+<td>115</td>
 <td>com.runner.TestRunner@2002fc1d</td></tr>
 </table><p>
 </body>

@@ -1,14 +1,17 @@
-Feature: flight searching successfully
+Feature: Search Round Trip Flights
 
-Scenario: Successful flight search
-Given the user is on the login page
-And the user selects the from as "<from>" and to as "<to>"
-And the user selects the departure and return
-And the user clicks the travellars icon
-And the user selects the special fare 
-Then the user clicks the search button
+  @SearchFlight
+  Scenario Outline: Search round-trip flights and see results
+    Given the user is on the homepage
+    When the user selects "Round Trip" trip type
+    And the user enters origin as "<from>"
+    And the user enters destination as "<to>"
+    And the user selects departure date as "<depart_date>"
+    And the user selects return date as "<return_date>"
+    And the user sets travellers as "<adults>" adults, "<children>" children, "<infants>" infants and class as "<travel_class>"
+    And the user clicks Search
+    Then search results should be displayed
 
-Examples:
-|from|to|
-|Chennai|New Delhi|
-
+    Examples:
+      | from           | to           | depart_date | return_date | adults | children | infants | travel_class |
+      | Chennai  | Mumbai | 2025-12-22  | 2025-12-28  | 1      | 0        | 0       | Economy      |
