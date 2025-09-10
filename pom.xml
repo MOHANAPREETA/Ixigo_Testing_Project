@@ -6,6 +6,18 @@
 	<artifactId>Testing_ixigo</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<dependencies>
+
+		<dependency>
+			<groupId>net.java.dev.jna</groupId>
+			<artifactId>jna</artifactId>
+			<version>5.14.0</version>
+		</dependency>
+		<dependency>
+			<groupId>net.java.dev.jna</groupId>
+			<artifactId>jna-platform</artifactId>
+			<version>5.14.0</version>
+		</dependency>
+
 		<!-- Selenium Java for browser automation -->
 		<dependency>
 			<groupId>org.seleniumhq.selenium</groupId>

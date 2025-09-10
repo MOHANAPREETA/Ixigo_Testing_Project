@@ -31,7 +31,7 @@ public class Searchingpage {
 	}
 
 	// Handle popup safely
-	private void handlePopupIfExists() {
+	public void handlePopupIfExists() {
 		try {
 			List<WebElement> popups = driver.findElements(By.id("wiz-iframe-intent"));
 			if (!popups.isEmpty()) {
@@ -45,43 +45,6 @@ public class Searchingpage {
 		}
 	}
 
-	// Generic date picker
-	public void selectDate(By buttonLocator, String dateStr) {
-		try {
-			LocalDate date = LocalDate.parse(dateStr, dtf);
-			handlePopupIfExists();
-
-			// Click the departure/return button
-			wait.until(ExpectedConditions.elementToBeClickable(buttonLocator)).click();
-
-			String targetMonthYear = date.format(DateTimeFormatter.ofPattern("MMMM yyyy"));
-			boolean found = false;
-
-			for (int i = 0; i < 12; i++) {
-				WebElement currentMonthYear = wait
-						.until(ExpectedConditions.visibilityOfElementLocated(Locators.dep_month));
-
-				if (currentMonthYear.getText().equalsIgnoreCase(targetMonthYear)) {
-					// Found correct month
-					By dayLocator = Locators.dayCell(String.valueOf(date.getDayOfMonth()));
-					WebElement dayElement = wait.until(ExpectedConditions.elementToBeClickable(dayLocator));
-					dayElement.click();
-					found = true;
-					Reporter.generateReport(driver, extTest, Status.PASS, "Selected date: " + dateStr);
-					break;
-				} else {
-					wait.until(ExpectedConditions.elementToBeClickable(Locators.calendarNextBtn)).click();
-				}
-			}
-
-			if (!found) {
-				Reporter.generateReport(driver, extTest, Status.FAIL,
-						"Could not select date within 12 months: " + dateStr);
-			}
-		} catch (Exception e) {
-			Reporter.generateReport(driver, extTest, Status.FAIL, "selectDate exception: " + e.getMessage());
-		}
-	}
 
 	public void openFlightsTab() {
 		try {
@@ -130,7 +93,7 @@ public class Searchingpage {
 	public void enterLandingPlace(String to) {
 		try {
 
-			handlePopupIfExists();
+			//handlePopupIfExists();
 
 			wait.until(ExpectedConditions.elementToBeClickable(Locators.to));
 			wait.until(ExpectedConditions.elementToBeClickable(Locators.click_to)).sendKeys(to);
@@ -150,21 +113,17 @@ public class Searchingpage {
 
 		}
 	}
+	
 
-	public void selectDepartureDate(String dateStr) {
-		selectDate(Locators.departure_btn, dateStr);
-	}
-
-	public void selectReturnDate(String dateStr) {
-		selectDate(Locators.return_btn, dateStr);
-	}
 
 	public void setTravellersAndClass(int adults, int children, int infants, String travelClass) {
 		try {
 			handlePopupIfExists();
 			wait.until(ExpectedConditions.elementToBeClickable(Locators.travellersPanel)).click();
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[text()='" +adults+ "']"))).click();
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[text()='" +children+ "']"))).click();
 
-			// increase adults (default = 1)
+			/*// increase adults (default = 1)
 			for (int i = 1; i < adults; i++) {
 				wait.until(ExpectedConditions.elementToBeClickable(Locators.adultsPlusBtn)).click();
 			}
@@ -175,7 +134,7 @@ public class Searchingpage {
 
 			for (int i = 0; i < infants; i++) {
 				wait.until(ExpectedConditions.elementToBeClickable(Locators.infantsPlusBtn)).click();
-			}
+			}*/
 
 			// select travel class
 			try {

@@ -42,16 +42,6 @@ public class searchingdefinitions {
 		search.enterLandingPlace(to);
 	}
 
-	@When("the user selects departure date as {string}")
-	public void the_user_selects_departure_date_as(String depart_date) {
-		search.selectDepartureDate(depart_date);
-	}
-
-	@When("the user selects return date as {string}")
-	public void the_user_selects_return_date_as(String return_date) {
-		search.selectReturnDate(return_date);
-	}
-
 	@When("the user sets travellers as {string} adults, {string} children, {string} infants and class as {string}")
 	public void the_user_sets_travellers_and_class(String adults, String children, String infants,
 			String travel_class) {

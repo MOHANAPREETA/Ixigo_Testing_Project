@@ -21,7 +21,7 @@ public class Logindefinitions {
 	public void the_user_is_on_the_login_page() {
 		// ✅ initialize here for both positive & negative flows
 		loginPage = new Loginpage(driver, extTest);
-		loginPage.loadCookiesFromFile("Cookies.data");
+		
 		String expRes = "https://www.ixigo.com/";
 		String actRes = driver.getCurrentUrl();
 		Assert.assertEquals(actRes, expRes, "User is not on Ixigo login page!");
@@ -57,9 +57,7 @@ public class Logindefinitions {
 		loginPage.enterOtpManually();
 		Base.sleep();
 
-		if (loginPage.navigatedpage()) {
-			loginPage.saveCookiesToFile("Cookies.data");
-		}
+		
 
 	}
 
