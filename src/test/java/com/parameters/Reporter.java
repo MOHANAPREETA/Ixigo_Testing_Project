@@ -1,7 +1,8 @@
 package com.parameters;
 
 import java.io.File;
-import java.io.IOException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.OutputType;
@@ -14,33 +15,57 @@ import com.aventstack.extentreports.Status;
 
 public class Reporter {
 
-    public static void generateReport(WebDriver driver, ExtentTest extTest, Status status, String stepMessage) {
-        if (status.equals(Status.PASS)) {
-            System.out.println(" ******* " + stepMessage + " is passed");
-            extTest.log(status, stepMessage);
-        } else if (status.equals(Status.FAIL)) {
-            System.out.println("***************** step is failed");
-            try {
-                String screenshotPath = captureScreenshot(driver, stepMessage);
-                extTest.log(status, stepMessage,
-                        MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
-            } catch (IOException e) {
-                e.printStackTrace();
-                extTest.log(status, stepMessage + " (Screenshot capture failed!)");
+    private static final String SCREENSHOTS_DIR = System.getProperty("user.dir")
+            + File.separator + "reports" + File.separator + "screenshots";
+
+    public static void generateReport(WebDriver driver, ExtentTest test, Status status, String message) {
+        try {
+            // Capture screenshot only on FAIL / WARNING (to reduce noise)
+            String screenshotPath = (status == Status.FAIL || status == Status.WARNING)
+                    ? captureScreenshot(driver, message)
+                    : null;
+
+            if (screenshotPath != null) {
+                test.log(status, message, MediaEntityBuilder.createScreenCaptureFromPath(screenshotPath).build());
+            } else {
+                test.log(status, message);
             }
+        } catch (Exception e) {
+            test.log(status, message);
+            test.log(Status.WARNING, "Could not attach screenshot: " + e.getMessage());
         }
     }
 
-    public static String captureScreenshot(WebDriver driver, String screenshotName) throws IOException {
-    	screenshotName = screenshotName.replaceAll("[^a-zA-Z0-9_-]", "_");
-        String path = "reports/screenshots/" + screenshotName + "_" + System.currentTimeMillis() + ".png";
-        File dest = new File(path);
-        dest.getParentFile().mkdirs();
-        File src = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+    private static String captureScreenshot(WebDriver driver, String message) {
+        if (driver == null) return null;
 
-        FileUtils.copyFile(src, dest);
+        try {
+            File dir = new File(SCREENSHOTS_DIR);
+            if (!dir.exists()) dir.mkdirs();
 
-        // ✅ return the full path (for ExtentReport to attach)
-        return dest.getAbsolutePath();
+            // Shorten name: hash of message instead of raw message
+            String safeHash = hashString(message);
+            String fileName = "ss_" + safeHash + "_" + System.currentTimeMillis() + ".png";
+            File destFile = new File(dir, fileName);
+
+            File srcFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            FileUtils.copyFile(srcFile, destFile);
+
+            return destFile.getAbsolutePath();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    private static String hashString(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] hash = md.digest(input.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hash) sb.append(String.format("%02x", b));
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            return "hashErr";
+        }
     }
 }

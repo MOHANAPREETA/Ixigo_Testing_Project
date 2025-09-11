@@ -3,11 +3,10 @@ package com.pages;
 import java.time.Duration;
 
 import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.aventstack.extentreports.ExtentTest;
 import com.aventstack.extentreports.Status;
@@ -17,57 +16,151 @@ import com.parameters.Reporter;
 public class SelectionPage extends Searchingpage {
 
     public SelectionPage(WebDriver driver, ExtentTest extTest) {
-        super(driver, extTest);   // call Searchingpage constructor
+        super(driver, extTest);
     }
 
+    /** Load flight search page and perform default search */
     public boolean loadPage() {
-      
-        
+        openFlightsTab();
+        handlePopupIfExists();
         selectRoundTrip();
         enterBoardingPlace("chennai");
         enterLandingPlace("Mumbai");
-        handlePopupIfExists();
         setTravellersAndClass(1, 0, 1, "Economy");
         clickSearch();
-      
 
         try {
             wait.until(ExpectedConditions.visibilityOfElementLocated(Locators.resultsContainer));
+            closePriceLockPopupIfPresent(); // close any blocking popup
             Reporter.generateReport(driver, extTest, Status.PASS, "The page has been landed");
             return true;
         } catch (Exception e) {
-            Reporter.generateReport(driver, extTest, Status.FAIL, "Failed to load page");
+            Reporter.generateReport(driver, extTest, Status.FAIL,
+                    "Failed to load page: " + e.getMessage());
             return false;
         }
     }
 
-    // ✅ Select filter dynamically based on input
-    public boolean applyFilter(String filterName) {
-    	handlePriceLockPopup();
+    /**
+     * Try multiple known popup locators and dismiss using click/JS/forced-visible.
+     */
+    public void closePriceLockPopupIfPresent() {
+        By[] popupLocators = new By[]{
+            By.xpath("//*[@id='portal-root']/div/div[2]/div/button"),
+            By.cssSelector("#portal-root div.bg-white button"),
+            By.cssSelector("button.OnboardingSheetLottie_OnboardingSheetInternationalButton__CUHff"),
+            By.xpath("//*[@id='portal-root']//button")
+        };
+
+        for (By pLoc : popupLocators) {
+            try {
+                WebElement btn = new org.openqa.selenium.support.ui.WebDriverWait(driver, Duration.ofSeconds(3))
+                        .until(ExpectedConditions.presenceOfElementLocated(pLoc));
+
+                try {
+                    WebElement clickable = new org.openqa.selenium.support.ui.WebDriverWait(driver, Duration.ofSeconds(2))
+                            .until(ExpectedConditions.elementToBeClickable(pLoc));
+                    clickable.click();
+                    Reporter.generateReport(driver, extTest, Status.INFO,
+                            "Popup dismissed using locator: " + pLoc);
+                    return;
+                } catch (Exception clickEx) {
+                    try {
+                        ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
+                        Reporter.generateReport(driver, extTest, Status.INFO,
+                                "Popup JS-clicked using locator: " + pLoc);
+                        return;
+                    } catch (Exception jsEx) {
+                        try {
+                            ((JavascriptExecutor) driver).executeScript(
+                                    "arguments[0].style.opacity = 1; " +
+                                    "arguments[0].style.pointerEvents='auto'; " +
+                                    "arguments[0].style.visibility='visible';", btn);
+                            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", btn);
+                            Reporter.generateReport(driver, extTest, Status.INFO,
+                                    "Popup forced-visible + clicked for locator: " + pLoc);
+                            return;
+                        } catch (Exception forceEx) {
+                            // try next locator
+                        }
+                    }
+                }
+            } catch (Exception ignore) {
+                // locator not present -> try next
+            }
+        }
+        Reporter.generateReport(driver, extTest, Status.INFO,
+                "Price-lock popup not found or could not be dismissed");
+    }
+
+    /** Apply Departure filter 06:00-12:00 (MORNING) */
+    public boolean applyDepartureMorning() {
+        closePriceLockPopupIfPresent();
         try {
-            By filterLocator = By.xpath("//label[contains(normalize-space(),'" + filterName + "')]");
-            WebElement filterElement = wait.until(ExpectedConditions.elementToBeClickable(filterLocator));
-            filterElement.click();
-            Reporter.generateReport(driver, extTest, Status.PASS, "Filter selected: " + filterName);
+            By departureCheckbox = By.xpath("//input[@name='takeOff' and @value='MORNING']");
+            WebElement el = wait.until(ExpectedConditions.presenceOfElementLocated(departureCheckbox));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", el);
+            Reporter.generateReport(driver, extTest, Status.PASS,
+                    "Departure filter applied: 06:00-12:00 (MORNING)");
             return true;
         } catch (Exception e) {
-            Reporter.generateReport(driver, extTest, Status.FAIL, "Failed to select filter: " + filterName + " | " + e.getMessage());
+            Reporter.generateReport(driver, extTest, Status.FAIL,
+                    "Could not apply Departure (MORNING) filter: " + e.getMessage());
             return false;
         }
     }
 
-    // ✅ Handle price lock popup if it appears
-    public void handlePriceLockPopup() {
-    	WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-    	try {
-    	    // Wait for the "Okay, Got It!" button to be visible and clickable
-    	    WebElement okayButton = wait.until(ExpectedConditions.elementToBeClickable(
-    	        By.xpath("//button[contains(text(),'Okay, Got It!')]")
-    	    ));
-    	    okayButton.click(); // Dismiss the Price Lock popup
-    	} catch (TimeoutException e) {
-    	    // Button not found -- the popup may not have appeared, continue test execution
-    	}
+    /** Apply Arrival filter 06:00-12:00 (MORNING) */
+    public boolean applyArrivalMorning() {
+        closePriceLockPopupIfPresent();
+        try {
+            By arrivalCheckbox = By.xpath("//input[@name='landing' and @value='MORNING']");
+            WebElement el = wait.until(ExpectedConditions.presenceOfElementLocated(arrivalCheckbox));
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", el);
+            Reporter.generateReport(driver, extTest, Status.PASS,
+                    "Arrival filter applied: 06:00-12:00 (MORNING)");
+            return true;
+        } catch (Exception e) {
+            Reporter.generateReport(driver, extTest, Status.FAIL,
+                    "Could not apply Arrival (MORNING) filter: " + e.getMessage());
+            return false;
+        }
+    }
 
+    /** Select the first available flight */
+    public boolean selectFirstAvailableFlight() {
+        closePriceLockPopupIfPresent();
+
+        By[] candidateXPaths = new By[]{
+            By.xpath("(//button[contains(.,'Select') or contains(.,'Book') or contains(.,'Continue')])[1]"),
+            By.xpath("(//a[contains(.,'Select') or contains(.,'Book')])[1]"),
+            By.xpath("(//button[contains(@data-testid,'select') or contains(@class,'select')])[1]"),
+            By.xpath("(//div[contains(@class,'FlightCard') or contains(@class,'result-card')])[1]//button")
+        };
+
+        for (By cand : candidateXPaths) {
+            try {
+                WebElement el = wait.until(ExpectedConditions.elementToBeClickable(cand));
+                el.click();
+                Reporter.generateReport(driver, extTest, Status.PASS, "Clicked first available flight");
+                return true;
+            } catch (Exception ignore) {
+                // try next candidate
+            }
+        }
+
+        try {
+            WebElement results = wait.until(ExpectedConditions.visibilityOfElementLocated(Locators.resultsContainer));
+            WebElement btn = results.findElement(By.xpath(".//button[.//text() or @aria-label][1]"));
+            wait.until(ExpectedConditions.elementToBeClickable(btn)).click();
+            Reporter.generateReport(driver, extTest, Status.PASS,
+                    "Clicked first available flight (fallback)");
+            return true;
+        } catch (Exception ignore) {
+        }
+
+        Reporter.generateReport(driver, extTest, Status.FAIL,
+                "Failed to select first available flight");
+        return false;
     }
 }

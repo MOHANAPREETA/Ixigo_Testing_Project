@@ -7,16 +7,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<dependencies>
 
-		<dependency>
-			<groupId>net.java.dev.jna</groupId>
-			<artifactId>jna</artifactId>
-			<version>5.14.0</version>
-		</dependency>
-		<dependency>
-			<groupId>net.java.dev.jna</groupId>
-			<artifactId>jna-platform</artifactId>
-			<version>5.14.0</version>
-		</dependency>
+		
 
 		<!-- Selenium Java for browser automation -->
 		<dependency>
@@ -56,11 +47,7 @@
 			<artifactId>cucumber-testng</artifactId>
 			<version>7.27.2</version>
 		</dependency>
-		<dependency>
-			<groupId>com.POM</groupId>
-			<artifactId>BDD_SauceDemo</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+		
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
