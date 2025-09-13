@@ -125,26 +125,34 @@ public class Searching_page {
 		}
 	}
 
-	public void enteringdate(String departure, String ret) {
-		// Convert dd-MM-yyyy → MMMM d, yyyy
-		DateTimeFormatter inputFmt = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-		DateTimeFormatter ariaFmt = DateTimeFormatter.ofPattern("MMMM d, yyyy");
+	public boolean enteringdate(String departure, String ret) {
+		try {
+			// Convert dd-MM-yyyy → MMMM d, yyyy
+			DateTimeFormatter inputFmt = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+			DateTimeFormatter ariaFmt = DateTimeFormatter.ofPattern("MMMM d, yyyy");
 
-		LocalDate depDate = LocalDate.parse(departure, inputFmt);
-		LocalDate retDate = LocalDate.parse(ret, inputFmt);
+			LocalDate depDate = LocalDate.parse(departure, inputFmt);
+			LocalDate retDate = LocalDate.parse(ret, inputFmt);
 
-		String depLabel = depDate.format(ariaFmt);
-		String retLabel = retDate.format(ariaFmt);
+			String depLabel = depDate.format(ariaFmt);
+			String retLabel = retDate.format(ariaFmt);
 
-		// Open calendar first
-		driver.findElement(By.xpath("/html/body/main/div[2]/div[1]/div[3]/div[2]/div[2]/div[1]/div/div/div")).click();
+			// Open calendar first
+			driver.findElement(By.xpath("/html/body/main/div[2]/div[1]/div[3]/div[2]/div[2]/div[1]/div/div/div"))
+					.click();
 
-		// Select departure date
-		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//abbr[@aria-label='" + depLabel + "']"))).click();
+			// Select departure date
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//abbr[@aria-label='" + depLabel + "']")))
+					.click();
 
-		// Select return date
-		wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//abbr[@aria-label='" + retLabel + "']"))).click();
-
+			// Select return date
+			wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//abbr[@aria-label='" + retLabel + "']")))
+					.click();
+			Reporter.generateReport(driver, extTest, Status.PASS, "The departure and return date are selected");
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
 
 	public boolean setTravellersAndClass(int aCount, int cCount, int iCount, String travelClass) {

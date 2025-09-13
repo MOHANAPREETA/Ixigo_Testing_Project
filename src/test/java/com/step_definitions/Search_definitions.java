@@ -31,10 +31,13 @@ public class Search_definitions {
 	@When("the user selects {string} trip type")
 	public void the_user_selects_trip_type(String tripType) {
 		if (tripType.equalsIgnoreCase("Round Trip")) {
-			search.selectRoundTrip();
+			boolean res = search.selectRoundTrip();
+			Assert.assertTrue(res, "Round trip is selected");
+
 		} else {
 			throw new IllegalArgumentException("❌ Unsupported trip type: " + tripType);
 		}
+
 	}
 
 	@When("the user enters origin as {string}")
@@ -52,8 +55,8 @@ public class Search_definitions {
 		to = TestDataContext.excelData[row][6];
 		boolean res = search.enterLandingPlace(to);
 		Assert.assertTrue(res, "Destination  place is entered");
-		search.enteringdate("21-09-2025", "25-09-2025");
-
+		boolean act = search.enteringdate("21-09-2025", "25-09-2025");
+		Assert.assertTrue(res, "Departuer and return dates are entered");
 
 	}
 
@@ -67,7 +70,7 @@ public class Search_definitions {
 		int a = Integer.parseInt(adults.trim());
 		int c = Integer.parseInt(children.trim());
 		int i = Integer.parseInt(infants.trim());
-		boolean res=search.setTravellersAndClass(a, c, i, travelClass);
+		boolean res = search.setTravellersAndClass(a, c, i, travelClass);
 		Assert.assertTrue(res, "Travellers and class is entered");
 	}
 
