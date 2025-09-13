@@ -9,14 +9,14 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 
-import com.parameters.PropertyReader;
+import com.parameters.Property_reader;
 
 public class Base {
 
 	public static WebDriver driver;
 
 	public void launchBrowser() {
-		Properties prop = PropertyReader.readProperties();
+		Properties prop = Property_reader.readProperties();
 		String browser = prop.getProperty("Browser");
 		String url = prop.getProperty("URL");
 
